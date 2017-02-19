@@ -8,6 +8,10 @@
 #
 
 library(shiny)
+library(leaflet)
+library(dplyr)
+library(RColorBrewer)
+
 
 # Define UI
 shinyUI( 

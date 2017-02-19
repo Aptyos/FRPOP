@@ -11,9 +11,13 @@ library(shiny)
 library(leaflet)
 library(dplyr)
 library(RColorBrewer)
-
-xlib <- c("ggplot2", "ggmap", "rgdal", "rgeos", "maptools", "dplyr", "tidyr", "sp", "tmap")
-lapply(xlib, library, character.only = TRUE)
+library(ggmap)  
+library(rgdal) 
+library(rgeos)
+library(maptools)
+library(dplyr)
+library(tidyr)
+library(sp)
 
 dv <- read.csv("dep_ville.csv", sep=";")
 
