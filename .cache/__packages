@@ -1,0 +1,15 @@
+base
+shiny
+leaflet
+dplyr
+RColorBrewer
+ggplot2
+ggmap
+sp
+rgdal
+rgeos
+maptools
+tidyr
+tmap
+rsconnect
+slidify
