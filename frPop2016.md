@@ -7,12 +7,14 @@ css: bootstrap_space.css
 
 Summary
 ========================================================
-- In France, administrative areas are organized in "regions"  which are subdivided in "Departments" and then in "Communes".
-- There are 95 departments in metropolitan France; other departments ( Guyane, ...) are not included here.
-- Data, up to date to January 2017, was retrieved from the French National Institute of Economics and Statistics (INSEE) 
-to display French population in different administative areas of France.
+- In France, administrative areas are organized in "Regions"  which are subdivided in "Departments" and then in "Communes".
+- There are 95 departments in metropolitan France.
+- Data, up to date to January 2017, was retrieved from the French National Institute of Statistics and Economic Studies [INSEE](https://www.insee.fr/en/accueil) to present French population in different administative areas of the territory.
 - The application maps the population number and density within each department.
----[Application URL:](https://aptyos.shinyapps.io/FRPOP/)
+
+[Application URL](https://aptyos.shinyapps.io/FRPOP/)
+ 
+[GitHub URL containing source files](https://github.com/Aptyos/FRPOP)
 
 
 Choosing a Department
