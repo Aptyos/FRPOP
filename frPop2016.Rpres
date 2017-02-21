@@ -1,11 +1,11 @@
 French Population 2016
 ========================================================
 author: Aptyos
-date: 2017-02-19
-css: frPop2016.css
+date: 2017-02-19 
 
 ```{r, echo=FALSE}
 library(ggplot2)
+library(shiny)
 ```
 
 
@@ -63,3 +63,5 @@ paste("In Year 2020 we'll be:",round(predict(fit, newdata = data.frame(year=c(20
 paste("In Year 2050 they 'll be:",round(predict(fit,newdata = data.frame(year=c(2050))),0 ) )
 ``` 
 </font>
+
+

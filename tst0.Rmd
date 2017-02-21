@@ -1,0 +1,194 @@
+---
+title: "Untitled"
+author: "aptyos"
+date: "21 février 2017"
+output: 
+  ioslides_presentation: 
+    fig_caption: yes
+    fig_width: 4.5
+    keep_md: yes
+runtime: shiny
+css: bootstrap_space.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(ggplot2)
+```
+
+## Summary
+
+- In France, administrative areas are organized in "Regions"  which are subdivided in "Departments" and then in "Communes".
+- There are 95 departments in metropolitan France.
+- Data, up to date to January 2017, was retrieved from the French National Institute of Statistics and Economic Studies [INSEE](https://www.insee.fr/en/accueil) to present French population in different administative areas of the territory.
+- The application maps the population number and density within each department.
+
+>- [Application URL](https://aptyos.shinyapps.io/FRPOP/)
+ 
+>- [GitHub URL containing source files](https://github.com/Aptyos/FRPOP)
+
+## Choosing a Department
+
+A department is accessed by clicking the drop-down list arrow 
+at the right of the selection field.
+
+![alt1text](selectDep.png)
+***
+Once done click on the "submit" button
+![alt2text](submitSelect.png)
+
+Some characteristics of the department will be displayed in the left tab while the map is recentered toward the main city of the choosen department.
+
+## Population, Main City and Density
+
+If a click is pressed on the blue delimitered area of the department a popup appears displaying the main city and the total number of people in the department.
+![alt3text](clikDep.png)
+***
+It is also interesting to know the population density (pop/km ). To get it the check box must be selected and the submit button pressed.
+![alt4text](checkDensityBox.png)
+
+![alt5text](legendDensity.png)
+
+
+## Population Growth Rate: 1946 - 2017
+
+```{r, echo=FALSE }
+frGrowth <- read.csv("France1946-2016.csv", sep=";")
+```
+
+
+```{r} 
+# eval = TRUE}
+shinyApp (
+
+ui <- shinyUI(fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("sliderYear", "What is the MPG of the car?",1946,2016,value = 2015), 
+      checkboxInput("showModel1", "Show/Hide Model 1", value= TRUE) #, 
+      #checkboxInput("showModel2", "Show/Hide Model 2", value = TRUE)
+    ),
+    mainPanel(
+      plotOutput("plot1"),
+      h5(""), textOutput("pred1"),
+      h5(""), textOutput("pred2")
+    )
+   ))),
+ server <- shinyServer(function(input, output) {
+   
+  model1 <- lm(total ~ year, data = frGrowth)
+  #model2 <- lm(total ~ ., data = frGrowth)
+  
+  model1pred <- reactive({
+    mpgInput <- input$sliderYear
+    v_pred <- predict(model1, newdata = data.frame(year = mpgInput))
+    paste("Predicted Horsepower from Model 1:", v_pred)
+  })
+   
+  output$plot1 <- renderPlot({
+    g <- ggplot(data = frGrowth, aes(x = year, y=total/1e6)) + geom_point(size =3, colour = "blue", alpha=0.2)
+    g <- g + xlab("Year") + ylab("Population(Million)")  
+    g
+    if(input$showModel1){
+      g + geom_smooth(method = "lm", colour = "red");
+    }
+    # fit <- lm(total ~  year, data= frGrowth)
+    # paste("In Year 2020 we'll be:",round(predict(fit, newdata = data.frame(year=c(2020))),0 ))
+    # paste("In Year 2050 they 'll be:",round(predict(fit,newdata = data.frame(year=c(2050))),0 ) )
+  })
+     
+  output$pred1 <- renderText({ model1pred() }) 
+  #output$pred2 <- renderText({ model2pred() })
+ })
+)
+``` 
+
+
+
+## Predict Horsepower from MPG
+
+```{r, warning=FALSE, message=FALSE}
+shinyApp(
+
+ui <- shinyUI(fluidPage(
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("sliderMPG", "What is the MPG of the car?",10,35,value = 20), 
+      checkboxInput("showModel1", "Show/Hide Model 1", value= TRUE), 
+      checkboxInput("showModel2", "Show/Hide Model 2", value = TRUE)
+    ),
+    mainPanel(
+      plotOutput("plot1"),
+      h5(""), textOutput("pred1"),
+      h5(""), textOutput("pred2")
+    )
+  )
+)),
+
+server <- shinyServer(function(input, output) {
+  
+  mtcars$mpgsp <- ifelse(mtcars$mpg - 20 > 0, mtcars$mpg - 20,0)
+  
+  model1 <- lm(hp ~ mpg, data = mtcars)
+  model2 <- lm(hp ~ mpgsp + mpg, data = mtcars)
+                         
+  model1pred <- reactive({
+    mpgInput <- input$sliderMPG
+    v_pred <- predict(model1, newdata = data.frame(mpg = mpgInput))
+    paste("Predicted Horsepower from Model 1:",v_pred)
+    })
+  
+  model2pred <- reactive({
+    mpgInput <- input$sliderMPG
+    v_pred2 <- predict(model2, newdata =
+                      data.frame(mpg = mpgInput,
+                                 mpgsp = ifelse(mpgInput - 20 > 0,
+                                 mpgInput - 20, 0)))
+    paste("Predicted Horsepower from Model 2:",v_pred2)
+                         })
+ 
+  output$plot1 <- renderPlot({
+    mpgInput <- input$sliderMPG
+    
+    plot(mtcars$mpg, mtcars$hp, xlab = "Miles Per Gallon",
+         ylab = "Horsepower", bty = "n", pch = 16,
+         xlim = c(10, 35), ylim = c(50, 350))
+    if(input$showModel1){
+      abline(model1, col = "red", lwd = 2)
+    }
+    if(input$showModel2){
+      model2lines <- predict(model2, newdata = data.frame(
+                                      mpg = 10:35, 
+                                      mpgsp = ifelse(10:35 - 20 > 0, 10:35 - 20, 0)
+                                      )
+                             )
+        lines(10:35, model2lines, col = "blue", lwd = 2)
+    } 
+    
+    legend(25, 250, c("Model 1 Prediction", "Model 2 Prediction"), pch=16,
+                      col = c("red", "blue"), bty = "n", cex = 1.2)
+    points(mpgInput, model1pred(), col = "red", pch = 16, cex=2)
+    points(mpgInput, model2pred(), col = "blue", pch = 16, cex = 2)
+    })
+      
+    output$pred1 <- renderText({ model1pred() }) 
+    output$pred2 <- renderText({ model2pred() })
+  })
+
+  
+)  
+```
+
+## Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## R Output
+
+```{r cars}
+summary(cars)
+```
+
+

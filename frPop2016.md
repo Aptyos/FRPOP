@@ -1,8 +1,7 @@
 French Population 2016
 ========================================================
 author: Aptyos
-date: 2017-02-19
-css: frPop2016.css
+date: 2017-02-19 
 
 
 
@@ -76,3 +75,5 @@ paste("In Year 2050 they 'll be:",round(predict(fit,newdata = data.frame(year=c(
 [1] "In Year 2050 they 'll be: 76806117"
 ```
 </font>
+
+
